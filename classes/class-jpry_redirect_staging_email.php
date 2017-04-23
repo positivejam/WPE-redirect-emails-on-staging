@@ -42,6 +42,10 @@ class JPry_Redirect_Staging_Email extends JPry_Singleton {
 	 */
 	public function maybe_redirect_mail( $mail_args ) {
 		if ( function_exists( 'is_wpe_snapshot' ) && is_wpe_snapshot() ) {
+
+			// log some info about original message so in testing can see what *would* actually be sent out in prod
+			error_log( "Original mail object: " . print_r( $mail_args, true ) );
+
 			$admin_email = get_site_option( 'admin_email' );
 
 			// Only redirect email that is NOT already going to the admin
@@ -50,6 +54,20 @@ class JPry_Redirect_Staging_Email extends JPry_Singleton {
 				$mail_args['subject'] = 'REDIRECTED MAIL | ' . $mail_args['subject'];
 				$mail_args['to'] = $admin_email;
 			}
+			
+			// Remove any Cc or Bcc headers, but leave 'From:' header untouched if possible
+			// If wp_mail() headers variable is array, use a filter
+			if ( is_array( $mail_args['headers'] ) ) {
+				$filtered_headers = array_filter( $mail_args['headers'], function ( $header ) {
+					return strncasecmp($header, 'From:', 5) == 0;
+				} );
+				$mail_args['headers'] = $filtered_headers;
+			}
+			// If it's a string, just zero out headers variable (tricky to reliably ensure all Cc and Bcc are stripped otherwise)
+			else {
+				$mail_args['headers'] = '';
+			}
+			error_log( "Filtered for staging mail object: " . print_r( $mail_args, true ) );
 		}
 		return $mail_args;
 	}
