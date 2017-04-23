@@ -4,7 +4,7 @@
  * Plugin URI: http://wordpress.org/plugins/redirect-emails-on-staging/
  * Description: (For WP Engine only) On the Staging site, redirect all emails to the site admin. This is useful in making sure that the staging site doesn't send out confusing emails to your users.
  * Version: 1.1
- * Author: Jeremy Pry
+ * Author: Jeremy Pry (Forked by Jordan Kohl)
  * Author URI: http://jeremypry.com/
  * License: GPL2
  */
